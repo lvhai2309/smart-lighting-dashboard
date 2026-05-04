@@ -3,7 +3,7 @@ import { lightingApi } from './api/lightingApi';
 import ControlPanel from './components/ControlPanel';
 import CabinetManager from './components/CabinetManager';
 import LampManager from './components/LampManager';
-
+import ScenarioManager from './components/ScenarioManager';
 function App() {
   const [activeTab, setActiveTab] = useState('control');
   const [cabinets, setCabinets] = useState([]);
@@ -56,6 +56,7 @@ function App() {
           <button className={`${activeTab === 'control' ? 'border-b-2 border-white' : 'opacity-70'}`} onClick={() => setActiveTab('control')}>Điều khiển & Giám sát</button>
           <button className={`${activeTab === 'cabinets' ? 'border-b-2 border-white' : 'opacity-70'}`} onClick={() => setActiveTab('cabinets')}>Quản lý Tủ điện</button>
           <button className={`${activeTab === 'lamps' ? 'border-b-2 border-white' : 'opacity-70'}`} onClick={() => setActiveTab('lamps')}>Quản lý Đèn</button>
+          <button className={`${activeTab === 'scenario' ? 'border-b-2 border-white' : 'opacity-70'}`} onClick={() => setActiveTab('scenario')}>Kịch bản</button>
         </div>
       </nav>
 
@@ -66,6 +67,7 @@ function App() {
         {/* Truyền dữ liệu trực tiếp xuống các trang quản lý để hiển thị trạng thái */}
         {activeTab === 'cabinets' && <CabinetManager cabinets={cabinets} lamps={lamps} reloadData={reloadData} />}
         {activeTab === 'lamps' && <LampManager cabinets={cabinets} lamps={lamps} reloadData={reloadData} />}
+        {activeTab === 'scenario' && <ScenarioManager />}
       </div>
     </div>
   );
