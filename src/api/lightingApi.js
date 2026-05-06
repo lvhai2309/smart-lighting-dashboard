@@ -22,7 +22,6 @@ export const lightingApi = {
         create: async (data) => (await api.post('/api/cabinet/create', data)).data,
         update: async (id, data) => (await api.put(`/api/cabinet/update/${id}`, data)).data,
         delete: async (id) => (await api.delete(`/api/cabinet/delete/${id}`)).data,
-        // --- THÊM MỚI TẠI ĐÂY ---
         power: async (id, data) => (await api.post(`/api/cabinet/power/${id}`, data)).data
     },
     device: {
@@ -32,13 +31,15 @@ export const lightingApi = {
         delete: async (id) => (await api.delete(`/api/device/delete/${id}`)).data
     },
     mqtt: {
-        control: async (data) => {
-            const res = await api.post('/api/mqtt/control', data);
-            return res.data;
-        },
-        controlBatch: async (data) => {
-            const res = await api.post('/api/mqtt/control-batch', data);
-            return res.data;
-        }
+        control: async (data) => (await api.post('/api/mqtt/control', data)).data,
+        controlBatch: async (data) => (await api.post('/api/mqtt/control-batch', data)).data
+    },
+    // Thêm phần schedule theo Swagger image_91b2f9.jpg
+    schedule: {
+        getAll: async () => (await api.get('/api/schedule/get-all')).data,
+        create: async (data) => (await api.post('/api/schedule/create', data)).data,
+        update: async (id, data) => (await api.put(`/api/schedule/update/${id}`, data)).data,
+        delete: async (id) => (await api.delete(`/api/schedule/delete/${id}`)).data,
+        toggle: async (id) => (await api.put(`/api/schedule/toggle/${id}`)).data
     }
 };
