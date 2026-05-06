@@ -20,9 +20,9 @@ const createCustomIcon = (emoji, color, glow = false) => L.divIcon({
     iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -18]
 });
 
-const cabinetIcon = createCustomIcon('🏢', '#ef4444'); 
-const lampOnIcon = createCustomIcon('💡', '#22c55e', true); 
-const lampOffIcon = createCustomIcon('💡', '#9ca3af'); 
+const cabinetIcon = createCustomIcon('🏢', '#ef4444');
+const lampOnIcon = createCustomIcon('💡', '#22c55e', true);
+const lampOffIcon = createCustomIcon('💡', '#9ca3af');
 
 const parseCoord = (val) => {
     if (val === undefined || val === null || val === "" || val === "Chưa có") return null;
@@ -30,14 +30,13 @@ const parseCoord = (val) => {
     return isNaN(parsed) ? null : parsed;
 };
 
-// Chỉ bay bản đồ nếu tọa độ thực sự tồn tại
 function MapUpdater({ center }) {
     const map = useMap();
-    React.useEffect(() => { 
-        if (center && center[0] !== 21.0285) { // Chỉ flyTo nếu không phải tọa độ mặc định
-            map.flyTo(center, 16, { duration: 1.5 }); 
-            setTimeout(() => map.invalidateSize(), 300); 
-        } 
+    React.useEffect(() => {
+        if (center && center[0] !== 21.0285) {
+            map.flyTo(center, 16, { duration: 1.5 });
+            setTimeout(() => map.invalidateSize(), 300);
+        }
     }, [center, map]);
     return null;
 }
@@ -53,8 +52,8 @@ export default function ControlPanel({ cabinets, lamps, setLamps, updateSystemSt
     const lampsInActiveCabinet = lamps.filter(l => Number(l.cabinetid) === Number(activeCabinetId));
     const isCurrentOn = selectedType === 'lamp' ? (activeLamp?.isOn ?? false) : (activeCabinet?.isOn ?? lampsInActiveCabinet.some(l => l.isOn));
     
-    const currentDisplayDim = unsavedDim !== null 
-        ? unsavedDim 
+    const currentDisplayDim = unsavedDim !== null
+        ? unsavedDim
         : (selectedType === 'lamp' ? (activeLamp?.brightness ?? 100) : (lampsInActiveCabinet[0]?.brightness ?? 100));
 
     const getCenter = () => {
@@ -84,11 +83,11 @@ export default function ControlPanel({ cabinets, lamps, setLamps, updateSystemSt
 
     const handleToggleCabinet = async () => {
         if (!activeCabinetId) return;
-        const newState = !isCurrentOn; 
-        updateSystemState(activeCabinetId, newState, null); 
-        try { 
-            await lightingApi.cabinet.power(activeCabinetId, { isOn: newState }); 
-        } catch (e) { 
+        const newState = !isCurrentOn;
+        updateSystemState(activeCabinetId, newState, null);
+        try {
+            await lightingApi.cabinet.power(activeCabinetId, { isOn: newState });
+        } catch (e) {
             updateSystemState(activeCabinetId, isCurrentOn, null);
             alert("❌ Lỗi kết nối!");
         }
@@ -99,8 +98,8 @@ export default function ControlPanel({ cabinets, lamps, setLamps, updateSystemSt
             alert("❌ Không thể lưu cấu hình vì thiết bị đang TẮT!");
             return;
         }
-        const codes = selectedType === 'cabinet' 
-            ? lampsInActiveCabinet.map(l => l.devicecode).filter(Boolean) 
+        const codes = selectedType === 'cabinet'
+            ? lampsInActiveCabinet.map(l => l.devicecode).filter(Boolean)
             : [activeLamp?.devicecode].filter(Boolean);
         
         try {
@@ -168,7 +167,6 @@ export default function ControlPanel({ cabinets, lamps, setLamps, updateSystemSt
                         <MapContainer center={mapCenter} zoom={16} style={{ height: '100%', width: '100%' }}>
                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                             <MapUpdater center={mapCenter} />
-                            {/* Chỉ render Marker nếu parseCoord không trả về null */}
                             {cabinets.map(c => {
                                 const pos = [parseCoord(c.latitude), parseCoord(c.longitude)];
                                 return (pos[0] && pos[1]) ? <Marker key={c.cabinetid} position={pos} icon={cabinetIcon}><Popup>🏢 {c.cabinetname}</Popup></Marker> : null;
@@ -181,13 +179,17 @@ export default function ControlPanel({ cabinets, lamps, setLamps, updateSystemSt
                     </div>
 
                     <div className="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-600">
-                        <div className="flex items-center justify-between mb-8 p-4 bg-green-50 rounded-lg">
-                            <div><h3 className="font-bold text-green-900 text-lg uppercase">CÔNG TẮC NGUỒN</h3><p className="text-green-700 text-sm italic">Điều khiển trạng thái thiết bị.</p></div>
-                            <label className="relative inline-flex items-center cursor-pointer scale-125">
-                                <input type="checkbox" className="sr-only peer" checked={isCurrentOn} onChange={handleToggleCabinet} />
-                                <div className="w-14 h-7 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
-                            </label>
-                        </div>
+                        {/* Chỉ hiện nút gạt công tắc nếu đang chọn Tủ (cabinet) */}
+                        {selectedType === 'cabinet' && (
+                            <div className="flex items-center justify-between mb-8 p-4 bg-green-50 rounded-lg">
+                                <div><h3 className="font-bold text-green-900 text-lg uppercase">CÔNG TẮC NGUỒN TỦ</h3><p className="text-green-700 text-sm italic">Điều khiển trạng thái toàn bộ đèn trong tủ.</p></div>
+                                <label className="relative inline-flex items-center cursor-pointer scale-125">
+                                    <input type="checkbox" className="sr-only peer" checked={isCurrentOn} onChange={handleToggleCabinet} />
+                                    <div className="w-14 h-7 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
+                        )}
+                        
                         <div>
                             <h3 className="font-bold text-gray-700 mb-4 flex justify-between">
                                 <span>ĐIỀU CHỈNH ĐỘ SÁNG {selectedType === 'cabinet' ? '(TẤT CẢ ĐÈN)' : ''}</span>

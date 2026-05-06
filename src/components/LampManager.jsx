@@ -50,7 +50,15 @@ export default function LampManager({ cabinets, lamps, reloadData }) {
             </div>
             <table className="w-full text-left border-collapse border">
                 <thead className="bg-green-600 text-white">
-                    <tr><th className="p-3 border">Mã đèn</th><th className="p-3 border">Tên đèn</th><th className="p-3 border">Tủ điện</th><th className="p-3 border">Trạng thái (Thực)</th><th className="p-3 border">Tọa độ</th><th className="p-3 border text-center">Hành động</th></tr>
+                    <tr>
+                        <th className="p-3 border">Mã đèn</th>
+                        <th className="p-3 border">Tên đèn</th>
+                        <th className="p-3 border">Tủ điện</th>
+                        <th className="p-3 border">Độ sáng</th>
+                        <th className="p-3 border">Trạng thái</th>
+                        <th className="p-3 border">Tọa độ</th>
+                        <th className="p-3 border text-center">Hành động</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {filteredLamps.map((lamp) => (
@@ -59,7 +67,7 @@ export default function LampManager({ cabinets, lamps, reloadData }) {
                             <td className="p-3 border font-semibold">{lamp.devicename}</td>
                             <td className="p-3 border">{cabinets.find(c => Number(c.cabinetid) === Number(lamp.cabinetid))?.cabinetname || 'Chưa gán'}</td>
                             
-                            {/* ĐÃ SỬA: Thay dimLevel bằng brightness để hiển thị đúng con số % */}
+                            {/* CỘT ĐỘ SÁNG */}
                             <td className="p-3 border font-bold">
                                 {lamp.isOn ? (
                                     <span className="text-green-600 flex items-center gap-1">
@@ -69,6 +77,15 @@ export default function LampManager({ cabinets, lamps, reloadData }) {
                                     <span className="text-gray-400 flex items-center gap-1">
                                         ⚪ Đã Tắt
                                     </span>
+                                )}
+                            </td>
+
+                            {/* CỘT TRẠNG THÁI (Online/Offline) */}
+                            <td className="p-3 border">
+                                {lamp.status === "Online" ? (
+                                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold border border-blue-200">ONLINE</span>
+                                ) : (
+                                    <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200">OFFLINE</span>
                                 )}
                             </td>
                             
@@ -81,7 +98,6 @@ export default function LampManager({ cabinets, lamps, reloadData }) {
                 </tbody>
             </table>
 
-            {/* Modal giữ nguyên */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-xl w-1/3 shadow-2xl border-t-8 border-green-600">
